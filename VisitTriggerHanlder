@@ -1,0 +1,53 @@
+/*===============================================================================================================
+*Class Name     : VisitTriggerHanlder
+*Description    : when job is create related job type assigned Checklist added in job type.
+*Company        : Merfantz Technologies Pvt Ltd
+*Date           : 15 Apr,2023
+*Version        : 1.0
+*Methods        : 
+================================================================================================================*/
+trigger VisitTrigger on fax__Job__c (before insert,before update,after insert, after update) {
+    
+    VisitTriggerHandler handler = new VisitTriggerHandler();
+    
+    if(Trigger.isbefore && Trigger.isInsert)
+    {
+       handler.JobFieldInsert(Trigger.new);
+      
+       
+    }
+    if(Trigger.isbefore && Trigger.isupdate){
+     
+       handler.JobFieldsUpdate(Trigger.new,Trigger.OldMap);
+       handler.returnOrderValidation(Trigger.new,Trigger.OldMap);
+       //handler.beforeUpdateChecklistItems(Trigger.new);
+        
+    }
+    if (Trigger.isAfter) 
+     {  
+        if (Trigger.isInsert) 
+        {
+            handler.jobBDLabelins(Trigger.new);   
+           // handler.createChecklistItems(Trigger.new);
+            handler.createRequiredPartsForInsert(Trigger.new);
+            handler.CreateJobNotes(Trigger.new);    
+          //   handler.beforeUpdateChecklistItems(Trigger.new,Trigger.oldMap);
+        } 
+        else if (Trigger.isUpdate) 
+        {
+           // handler.AddLabourandTravel(Trigger.new, Trigger.oldMap);
+            handler.JobUpdate(Trigger.New, Trigger.oldMap);
+            handler.jobDBLableUpd(Trigger.new, Trigger.oldMap);
+            handler.createChecklistItemsOnUpdate(Trigger.new, Trigger.oldMap);
+            handler.createPartsToUpdate(Trigger.new, Trigger.oldMap);
+            handler.caseUpdate(Trigger.old);
+            handler.InstallbasUpdate(Trigger.New, Trigger.oldMap);
+            handler.generateOrder(Trigger.New, Trigger.oldMap); 
+            handler.jobServerityUpd(Trigger.New, Trigger.oldMap);
+            handler.UpdateJobNotes(Trigger.New, Trigger.oldMap);
+            handler.insertServiceReport(Trigger.New, Trigger.oldMap);
+
+            
+        }
+    }
+}
